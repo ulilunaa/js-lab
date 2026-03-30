@@ -4,77 +4,53 @@
  *              без использования встроенных методов массивов.
  */
 
-// ─────────────────────────────────────────────
-// 1.1 Вывод массива в консоль
-// ─────────────────────────────────────────────
-
 /**
- * Выводит элементы массива в формате "Element N: value X"
- * @param {Array} array - исходный массив
- * @returns {undefined}
- * @example
- * printArray([10, 20, 30]);
- * // Element 0: value 10
- * // Element 1: value 20
- * // Element 2: value 30
+ * 1.1 Выводит элементы массива в формате: "Element [index]: value [value]"
+ * @param {Array} array - Исходный массив
  */
 function printArray(array) {
+  if (!Array.isArray(array)) throw new TypeError("Аргумент должен быть массивом");
   for (let i = 0; i < array.length; i++) {
     console.log(`Element ${i}: value ${array[i]}`);
   }
 }
 
 /**
- * Выводит элементы массива в формате "N: X"
- * @param {Array} array - исходный массив
- * @returns {undefined}
- * @example
- * printArray1([10, 20, 30]);
- * // 0: 10
- * // 1: 20
- * // 2: 30
+ * 1.1 Выводит элементы массива в формате: "[index]: [value]"
+ * @param {Array} array - Исходный массив
  */
 function printArray1(array) {
+  if (!Array.isArray(array)) throw new TypeError("Аргумент должен быть массивом");
   for (let i = 0; i < array.length; i++) {
-    console.log(`${i}: ${array[i]}`);
+    console.log(`${i}:  ${array[i]}`);
   }
 }
 
-// ─────────────────────────────────────────────
-// 1.2 forEach
-// ─────────────────────────────────────────────
-
 /**
- * Выполняет переданный колбэк для каждого элемента массива.
- * @param {Array} array - исходный массив
- * @param {Function} callback - функция вида (element, index, array)
- * @returns {undefined}
- * @example
- * forEach([1, 2, 3], (el, i) => console.log(`Element: ${el}, Index: ${i}`));
- * // Element: 1, Index: 0
- * // Element: 2, Index: 1
- * // Element: 3, Index: 2
+ * 1.2 Выполняет переданную функцию (колбэк) один раз для каждого элемента массива.
+ * @param {Array} array - Массив для обхода.
+ * @param {Function} callback - Функция, выполняемая для каждого элемента.
+ * @returns {undefined} Функция ничего не возвращает.
  */
 function forEach(array, callback) {
+  if (!Array.isArray(array)) throw new TypeError("Первый аргумент должен быть массивом");
+  if (typeof callback !== "function") throw new TypeError("Второй аргумент должен быть функцией");
+
   for (let i = 0; i < array.length; i++) {
     callback(array[i], i, array);
   }
 }
 
-// ─────────────────────────────────────────────
-// 2. map
-// ─────────────────────────────────────────────
-
 /**
- * Создаёт новый массив из результатов вызова колбэка для каждого элемента.
- * @param {Array} array - исходный массив
- * @param {Function} callback - функция вида (element, index, array)
- * @returns {Array} новый массив с преобразованными элементами
- * @example
- * const squared = map([1, 2, 3], el => el * el);
- * console.log(squared); // [1, 4, 9]
+ * 2. Создает новый массив с результатами вызова указанной функции для каждого элемента.
+ * @param {Array} array - Исходный массив.
+ * @param {Function} callback - Функция-преобразователь.
+ * @returns {Array} Новый массив с преобразованными элементами.
  */
 function map(array, callback) {
+  if (!Array.isArray(array)) throw new TypeError("Не массив");
+  if (typeof callback !== "function") throw new TypeError("Не функция");
+
   const result = [];
   for (let i = 0; i < array.length; i++) {
     result.push(callback(array[i], i, array));
@@ -82,20 +58,16 @@ function map(array, callback) {
   return result;
 }
 
-// ─────────────────────────────────────────────
-// 3. filter
-// ─────────────────────────────────────────────
-
 /**
- * Возвращает новый массив из элементов, для которых колбэк вернул true.
- * @param {Array} array - исходный массив
- * @param {Function} callback - функция вида (element, index, array), возвращает boolean
- * @returns {Array} отфильтрованный массив
- * @example
- * const even = filter([1, 2, 3, 4, 5], el => el % 2 === 0);
- * console.log(even); // [2, 4]
+ * 3. Создает новый массив со всеми элементами, прошедшими проверку, заданную в колбэке.
+ * @param {Array} array - Исходный массив.
+ * @param {Function} callback - Функция-предикат (возвращает true/false).
+ * @returns {Array} Новый отфильтрованный массив.
  */
 function filter(array, callback) {
+  if (!Array.isArray(array)) throw new TypeError("Не массив");
+  if (typeof callback !== "function") throw new TypeError("Не функция");
+
   const result = [];
   for (let i = 0; i < array.length; i++) {
     if (callback(array[i], i, array)) {
@@ -105,20 +77,16 @@ function filter(array, callback) {
   return result;
 }
 
-// ─────────────────────────────────────────────
-// 4. find
-// ─────────────────────────────────────────────
-
 /**
- * Возвращает первый элемент массива, для которого колбэк вернул true.
- * @param {Array} array - исходный массив
- * @param {Function} callback - функция вида (element, index, array), возвращает boolean
- * @returns {*} найденный элемент или undefined
- * @example
- * const first = find([1, 2, 3, 4], el => el % 2 === 0);
- * console.log(first); // 2
+ * 4. Возвращает первый элемент массива, удовлетворяющий условию.
+ * @param {Array} array - Исходный массив.
+ * @param {Function} callback - Функция-предикат.
+ * @returns {*} Найденный элемент или undefined.
  */
 function find(array, callback) {
+  if (!Array.isArray(array)) throw new TypeError("Не массив");
+  if (typeof callback !== "function") throw new TypeError("Не функция");
+
   for (let i = 0; i < array.length; i++) {
     if (callback(array[i], i, array)) {
       return array[i];
@@ -127,21 +95,16 @@ function find(array, callback) {
   return undefined;
 }
 
-// ─────────────────────────────────────────────
-// 5. some
-// ─────────────────────────────────────────────
-
 /**
- * Проверяет, есть ли хотя бы один элемент, для которого колбэк вернул true.
- * Обход прекращается при первом совпадении.
- * @param {Array} array - исходный массив
- * @param {Function} callback - функция вида (element, index, array), возвращает boolean
- * @returns {boolean}
- * @example
- * const hasEven = some([1, 3, 5, 4], el => el % 2 === 0);
- * console.log(hasEven); // true
+ * 5. Проверяет, удовлетворяет ли хотя бы один элемент массива условию.
+ * @param {Array} array - Исходный массив.
+ * @param {Function} callback - Функция-предикат.
+ * @returns {boolean} true, если есть хотя бы одно совпадение, иначе false.
  */
 function some(array, callback) {
+  if (!Array.isArray(array)) throw new TypeError("Не массив");
+  if (typeof callback !== "function") throw new TypeError("Не функция");
+
   for (let i = 0; i < array.length; i++) {
     if (callback(array[i], i, array)) {
       return true;
@@ -150,21 +113,16 @@ function some(array, callback) {
   return false;
 }
 
-// ─────────────────────────────────────────────
-// 6. every
-// ─────────────────────────────────────────────
-
 /**
- * Проверяет, все ли элементы массива удовлетворяют условию колбэка.
- * Обход прекращается при первом несоответствии.
- * @param {Array} array - исходный массив
- * @param {Function} callback - функция вида (element, index, array), возвращает boolean
- * @returns {boolean}
- * @example
- * const allEven = every([2, 4, 6], el => el % 2 === 0);
- * console.log(allEven); // true
+ * 6. Проверяет, все ли элементы массива удовлетворяют условию.
+ * @param {Array} array - Исходный массив.
+ * @param {Function} callback - Функция-предикат.
+ * @returns {boolean} true, если все элементы подходят, иначе false.
  */
 function every(array, callback) {
+  if (!Array.isArray(array)) throw new TypeError("Не массив");
+  if (typeof callback !== "function") throw new TypeError("Не функция");
+
   for (let i = 0; i < array.length; i++) {
     if (!callback(array[i], i, array)) {
       return false;
@@ -173,39 +131,61 @@ function every(array, callback) {
   return true;
 }
 
-// ─────────────────────────────────────────────
-// 7. reduce (дополнительное задание)
-// ─────────────────────────────────────────────
-
 /**
- * Последовательно обрабатывает элементы массива, накапливая результат в аккумуляторе.
- * @param {Array} array - исходный массив
- * @param {Function} callback - функция вида (accumulator, element, index, array)
- * @param {*} [initialValue] - начальное значение аккумулятора (необязательно)
- * @returns {*} итоговое значение аккумулятора, или undefined если массив пуст
- * @example
- * const sum = reduce([1, 2, 3, 4, 5], (acc, el) => acc + el, 0);
- * console.log(sum); // 15
+ * 7. Применяет функцию к аккумулятору и каждому элементу массива, сводя его к одному значению.
+ * @param {Array} array - Исходный массив.
+ * @param {Function} callback - Функция (accumulator, element, index, array).
+ * @param {*} [initialValue] - Начальное значение аккумулятора (необязательно).
+ * @returns {*} Итоговое значение аккумулятора.
  */
 function reduce(array, callback, initialValue) {
+  if (!Array.isArray(array)) throw new TypeError("Не массив");
+  if (typeof callback !== "function") throw new TypeError("Не функция");
+
   if (array.length === 0 && initialValue === undefined) {
-    return undefined;
+    return undefined; 
   }
 
-  let acc;
-  let startIndex;
+  let accumulator;
+  let startIndex = 0;
 
   if (initialValue !== undefined) {
-    acc = initialValue;
-    startIndex = 0;
+    accumulator = initialValue;
   } else {
-    acc = array[0];
+    accumulator = array[0];
     startIndex = 1;
   }
 
   for (let i = startIndex; i < array.length; i++) {
-    acc = callback(acc, array[i], i, array);
+    accumulator = callback(accumulator, array[i], i, array);
   }
 
-  return acc;
+  return accumulator;
 }
+
+// ==========================================
+// ПРИМЕРЫ ИСПОЛЬЗОВАНИЯ (ДЛЯ ПРОВЕРКИ)
+// ==========================================
+
+console.log("--- Тест forEach ---");
+forEach([1, 2, 3], (el, i) => console.log(`Element: ${el}, Index: ${i}`));
+
+console.log("\n--- Тест map ---");
+console.log(map([1, 2, 3], (el) => el * el)); // [1, 4, 9]
+
+console.log("\n--- Тест filter ---");
+console.log(filter([1, 2, 3, 4, 5], (el) => el % 2 === 0)); // [2, 4]
+
+console.log("\n--- Тест find ---");
+console.log(find([1, 2, 3, 4, 5], (el) => el % 2 === 0)); // 2
+
+console.log("\n--- Тест some ---");
+console.log(some([1, 3, 5], (el) => el % 2 === 0)); // false
+console.log(some([1, 2, 5], (el) => el % 2 === 0)); // true
+
+console.log("\n--- Тест every ---");
+console.log(every([2, 4, 6], (el) => el % 2 === 0)); // true
+console.log(every([2, 4, 5], (el) => el % 2 === 0)); // false
+
+console.log("\n--- Тест reduce ---");
+console.log(reduce([1, 2, 3, 4, 5], (acc, el) => acc + el, 0)); // 15
