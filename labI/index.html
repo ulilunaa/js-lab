@@ -1,1 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow — Менеджер задач</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="noise"></div>
 
+  <header class="header">
+    <div class="header__logo">Task<span>Flow</span></div>
+    <div class="header__stats">
+      <span id="stat-total">0 задач</span>
+      <span class="divider">·</span>
+      <span id="stat-done" class="done-count">0 выполнено</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Форма добавления -->
+    <section class="add-section">
+      <h1 class="add-section__title">Новая задача</h1>
+      <form id="task-form" class="task-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <input
+              type="text"
+              id="task-title"
+              class="input"
+              placeholder="Название задачи..."
+              autocomplete="off"
+            />
+            <span class="error-msg" id="title-error"></span>
+          </div>
+          <div class="form-group form-group--select">
+            <select id="task-priority" class="input select">
+              <option value="low">🟢 Низкий приоритет</option>
+              <option value="medium" selected>🟡 Средний приоритет</option>
+              <option value="high">🔴 Высокий приоритет</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group form-group--wide">
+            <input
+              type="text"
+              id="task-desc"
+              class="input"
+              placeholder="Описание (необязательно)..."
+              autocomplete="off"
+            />
+          </div>
+          <div class="form-group">
+            <input type="date" id="task-date" class="input" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn--primary">
+          <span class="btn__icon">+</span> Добавить задачу
+        </button>
+      </form>
+    </section>
+
+    <!-- Панель фильтрации и поиска -->
+    <section class="controls">
+      <div class="search-wrap">
+        <input type="text" id="search-input" class="input input--search" placeholder="🔍 Поиск по задачам..." />
+      </div>
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">Все</button>
+        <button class="filter-btn" data-filter="active">Активные</button>
+        <button class="filter-btn" data-filter="completed">Выполненные</button>
+      </div>
+      <div class="sort-wrap">
+        <select id="sort-select" class="input select select--sm">
+          <option value="date-desc">Новые сначала</option>
+          <option value="date-asc">Старые сначала</option>
+          <option value="priority-high">Высокий приоритет</option>
+          <option value="priority-low">Низкий приоритет</option>
+          <option value="alpha">А → Я</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Список задач -->
+    <section class="tasks-section">
+      <ul id="task-list" class="task-list"></ul>
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-state__icon">📭</div>
+        <p>Нет задач для отображения</p>
+      </div>
+    </section>
+
+    <!-- Кнопка очистки выполненных -->
+    <div class="bottom-bar">
+      <button id="clear-completed" class="btn btn--ghost">Очистить выполненные</button>
+    </div>
+  </main>
+
+  <!-- Модальное окно редактирования -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Редактировать задачу">
+    <div class="modal__backdrop"></div>
+    <div class="modal__box">
+      <button class="modal__close" id="modal-close" aria-label="Закрыть">✕</button>
+      <h2 class="modal__title">Редактировать задачу</h2>
+      <form id="edit-form" novalidate>
+        <div class="form-group">
+          <label class="label">Название</label>
+          <input type="text" id="edit-title" class="input" />
+          <span class="error-msg" id="edit-title-error"></span>
+        </div>
+        <div class="form-group">
+          <label class="label">Описание</label>
+          <input type="text" id="edit-desc" class="input" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="label">Приоритет</label>
+            <select id="edit-priority" class="input select">
+              <option value="low">🟢 Низкий</option>
+              <option value="medium">🟡 Средний</option>
+              <option value="high">🔴 Высокий</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="label">Дедлайн</label>
+            <input type="date" id="edit-date" class="input" />
+          </div>
+        </div>
+        <div class="modal__actions">
+          <button type="button" class="btn btn--ghost" id="modal-cancel">Отмена</button>
+          <button type="submit" class="btn btn--primary">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
