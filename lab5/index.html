@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Учёт личных финансов</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Личные финансы</h1>
+    <span>учёт доходов и расходов</span>
+  </header>
+
+  <main>
+
+    <!-- Баланс -->
+    <div class="balance-card">
+      <div>
+        <div class="balance-label">Общий баланс</div>
+        <div class="balance-value total-positive" id="total-amount">0.00</div>
+      </div>
+      <span style="color:var(--muted);font-size:28px;margin-left:4px;font-family:var(--font-head)">₽</span>
+    </div>
+
+    <!-- Таблица транзакций -->
+    <div class="table-wrap">
+      <table id="transactions-table">
+        <thead>
+          <tr>
+            <th>Дата и время</th>
+            <th>Категория</th>
+            <th>Описание</th>
+            <th>Действие</th>
+          </tr>
+        </thead>
+        <tbody id="transactions-tbody">
+          <tr class="empty-state" id="empty-row">
+            <td colspan="4">Транзакций пока нет. Добавьте первую!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Правая колонка: форма + детали -->
+    <aside class="sidebar">
+
+      <!-- Форма добавления -->
+      <div class="form-card">
+        <h2>+ Новая транзакция</h2>
+        <form id="transaction-form" novalidate>
+
+          <div id="form-error"></div>
+
+          <div class="form-group">
+            <label for="input-amount">Сумма (₽)</label>
+            <input
+              type="number"
+              id="input-amount"
+              name="amount"
+              placeholder="Напр.: 1500 или -500"
+              step="0.01"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="input-category">Категория</label>
+            <select id="input-category" name="category">
+              <option value="">— Выберите —</option>
+              <option value="Зарплата">Зарплата</option>
+              <option value="Фриланс">Фриланс</option>
+              <option value="Продукты">Продукты</option>
+              <option value="Транспорт">Транспорт</option>
+              <option value="ЖКХ">ЖКХ</option>
+              <option value="Развлечения">Развлечения</option>
+              <option value="Здоровье">Здоровье</option>
+              <option value="Одежда">Одежда</option>
+              <option value="Образование">Образование</option>
+              <option value="Прочее">Прочее</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="input-description">Описание</label>
+            <textarea
+              id="input-description"
+              name="description"
+              rows="3"
+              placeholder="Краткое описание транзакции..."
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">Добавить транзакцию</button>
+        </form>
+      </div>
+
+      <!-- Блок деталей транзакции -->
+      <div id="transaction-detail"></div>
+
+    </aside>
+
+  </main>
+
+  <script type="module" src="src/index.js"></script>
+</body>
+</html>
