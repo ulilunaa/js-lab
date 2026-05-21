@@ -1,1 +1,159 @@
+/**
+ * app.js — главный модуль приложения TaskFlow
+ * Координирует все остальные модули и инициализирует приложение.
+ */
 
+import {
+  getTasks, addTask, deleteTask, toggleTask,
+  updateTask, clearCompleted, filterTasks, sortTasks
+} from './modules/tasks.js';
+import { renderTasks, updateStats } from './modules/render.js';
+import { validateTaskForm } from './modules/validation.js';
+import { openModal, initModal } from './modules/modal.js';
+
+// ─── Состояние UI ──────────────────────────────────────────────
+let currentFilter = 'all';
+let currentSearch = '';
+let currentSort = 'date-desc';
+
+// ─── DOM-элементы ──────────────────────────────────────────────
+const taskForm     = document.getElementById('task-form');
+const taskTitleEl  = document.getElementById('task-title');
+const taskDescEl   = document.getElementById('task-desc');
+const taskPriority = document.getElementById('task-priority');
+const taskDate     = document.getElementById('task-date');
+const titleError   = document.getElementById('title-error');
+
+const taskListEl   = document.getElementById('task-list');
+const emptyStateEl = document.getElementById('empty-state');
+const searchInput  = document.getElementById('search-input');
+const sortSelect   = document.getElementById('sort-select');
+const clearBtn     = document.getElementById('clear-completed');
+const filterBtns   = document.querySelectorAll('.filter-btn');
+
+// ─── Отрисовка ─────────────────────────────────────────────────
+
+/**
+ * Перерисовать список задач с учётом текущих фильтров и сортировки
+ */
+function render() {
+  const all = getTasks();
+  const filtered = filterTasks(all, currentFilter, currentSearch);
+  const sorted = sortTasks(filtered, currentSort);
+
+  renderTasks(taskListEl, emptyStateEl, sorted, {
+    onToggle: handleToggle,
+    onDelete: handleDelete,
+    onEdit:   handleEdit,
+  });
+
+  updateStats(all);
+}
+
+// ─── Обработчики задач ────────────────────────────────────────
+
+function handleToggle(id) {
+  toggleTask(id);
+  render();
+}
+
+function handleDelete(id) {
+  deleteTask(id);
+  render();
+}
+
+function handleEdit(id) {
+  const task = getTasks().find(t => t.id === id);
+  if (!task) return;
+  openModal(task, (taskId, data) => {
+    updateTask(taskId, data);
+    render();
+  });
+}
+
+// ─── Форма добавления ─────────────────────────────────────────
+
+taskForm.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const title = taskTitleEl.value;
+  const { valid, errors } = validateTaskForm({ title });
+
+  // Показ/скрытие ошибок
+  if (!valid) {
+    titleError.textContent = errors.title || '';
+    taskTitleEl.classList.add('error');
+    taskTitleEl.focus();
+    return;
+  }
+
+  titleError.textContent = '';
+  taskTitleEl.classList.remove('error');
+
+  addTask({
+    title,
+    description: taskDescEl.value,
+    priority: taskPriority.value,
+    deadline: taskDate.value,
+  });
+
+  // Сброс формы
+  taskForm.reset();
+  taskPriority.value = 'medium';
+
+  render();
+});
+
+// Убрать ошибку при вводе
+taskTitleEl.addEventListener('input', () => {
+  if (taskTitleEl.value.trim()) {
+    titleError.textContent = '';
+    taskTitleEl.classList.remove('error');
+  }
+});
+
+// ─── Фильтры ──────────────────────────────────────────────────
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+// ─── Поиск (debounce) ─────────────────────────────────────────
+
+let searchTimer;
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    currentSearch = searchInput.value;
+    render();
+  }, 250);
+});
+
+// ─── Сортировка ───────────────────────────────────────────────
+
+sortSelect.addEventListener('change', () => {
+  currentSort = sortSelect.value;
+  render();
+});
+
+// ─── Очистка выполненных ──────────────────────────────────────
+
+clearBtn.addEventListener('click', () => {
+  const count = getTasks().filter(t => t.completed).length;
+  if (count === 0) return;
+
+  if (confirm(`Удалить ${count} выполненных задач?`)) {
+    clearCompleted();
+    render();
+  }
+});
+
+// ─── Инициализация ────────────────────────────────────────────
+
+initModal();
+render();
